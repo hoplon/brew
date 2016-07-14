@@ -1,4 +1,4 @@
-(ns degree9.bidi
+(ns hoplon.bidi
   (:require [bidi.schema :refer [RoutePair]]
             [schema.core :as schema]
     #?@(:cljs [[cuerdas.core :as s]
