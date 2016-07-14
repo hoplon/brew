@@ -1,0 +1,7 @@
+[[adzerk/bootlaces    "0.1.13" :scope "test"]
+ [degree9/boot-semver "1.2.1" :scope "test"]
+ [hoplon/boot-hoplon  "0.1.13" :scope "test"]
+ [hoplon/hoplon       "6.0.0-alpha16" :scope "provided"]
+ [bidi                "2.0.9"]
+ [funcool/cuerdas     "0.8.0"]
+ [prismatic/schema    "1.1.2"]]
