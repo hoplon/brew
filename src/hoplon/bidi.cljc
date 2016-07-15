@@ -4,7 +4,7 @@
     #?@(:cljs [[cuerdas.core :as s]
                [bidi.bidi :as bidi]
                [hoplon.core :refer [route-cell]]]))
-  #?(:cljs (:require-macros [degree9.bidi :refer [route-tpl]])))
+  #?(:cljs (:require-macros [hoplon.bidi :refer [route-tpl]])))
 
 #?(:cljs (def match-route bidi/match-route))
 
