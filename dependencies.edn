@@ -4,4 +4,5 @@
  [hoplon/hoplon       "6.0.0-alpha16" :scope "provided"]
  [bidi                "2.0.9"]
  [funcool/cuerdas     "0.8.0"]
- [prismatic/schema    "1.1.2"]]
+ [prismatic/schema    "1.1.2"]
+ [cljsjs/skel         "3.0.1-0"]]
