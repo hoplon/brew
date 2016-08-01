@@ -6,7 +6,7 @@
   "Attaches callbacks to the `auth` state.
   Requires login callback, accepts optional logout callback."
   [auth login & [logout]]
-  (hl/with-init!
+  `(hl/with-init!
     (fbauth/auth-changed
-      auth
-      #(if % (login %) (when logout (logout))))))
+      ~auth
+      #(if % (~login %) ~(when logout `(logout))))))
