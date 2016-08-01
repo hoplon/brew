@@ -1,7 +1,6 @@
 (ns hoplon.skel
-  (:require [clojure.string :as s]
-            #?@(:cljs [[cljsjs.skel]]))
-  #?(:cljs (:require-macros [hoplon.skel :refer [with-breakpoint]])))
+  (:require [cljsjs.skel])
+  (:require-macros [hoplon.skel :refer [with-breakpoint]]))
 
 ;; Skel Defaults
 (defc skel-loading true)
@@ -34,9 +33,3 @@
 (with-breakpoint +medium -medium
   #(.prioritize js/jQuery
     ".important\\28 medium\\29" (-> js/skel (.breakpoint "medium") .active)))
-
-;; CLJS Macros
-#?(:clj (defmacro with-breakpoint [& bp]
-          (let [f (last bp)
-                e (s/join " " (mapv str (butlast bp)))]
-            `(on ~e ~f))))
