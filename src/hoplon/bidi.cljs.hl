@@ -1,0 +1,27 @@
+(ns hoplon.bidi
+  (:require [cuerdas.core :as s]
+            [bidi.bidi :as bidi])
+  (:require-macros [hoplon.bidi :refer [route-tpl]]))
+
+(def match-route bidi/match-route)
+
+(def ^:dynamic *route* (route-cell ""))
+
+(defn wrap-route
+  "Takes `routes` and a (route-cell).
+   Returns formula cell containing current matching handler."
+  [routes routec]
+  (javelin.core/cell=
+    (:handler (bidi/match-route routes (s/strip-prefix routec "#")))))
+
+(defn active-route?
+  "Takes `routes` and `route`, returns formula cell.
+   Formula cell is true if `route` is currently active."
+  [routes route]
+  (javelin.core/cell= (= route (wrap-route routes *route*))))
+
+(defn route!
+  "Change URL hash, does not reload the page."
+  [routes & routeopts]
+  (aset js/window "location" "hash"
+  (s/join ["#" (apply bidi/path-for routes routeopts)])))
