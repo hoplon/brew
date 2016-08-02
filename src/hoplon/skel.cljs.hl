@@ -9,7 +9,12 @@
 ;; Init Skel Breakpoints
 (defn breakpoints!
   ([]
-   (breakpoints! :xlarge "1680px" :large  "1280px" :medium "980px" :small  "736px" :xsmall "480px"))
+   (breakpoints!
+     :xlarge "1680px"
+     :large  "1280px"
+     :medium "980px"
+     :small  "736px"
+     :xsmall "480px"))
   ([& {:keys [xlarge large medium small xsmall]}]
    (.breakpoints js/skel
                  #js {:xlarge (str "(max-width:" xlarge ")")
