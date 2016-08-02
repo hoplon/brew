@@ -19,6 +19,11 @@
          :url         "http://github.com/hoplon/brew"
          :scm {:url "http://github.com/hoplon/brew"}})
 
+(deftask ci-deps
+  "Force CI to fetch dependencies."
+  []
+  identity)
+
 (deftask tests
   "Run code tests."
   []
