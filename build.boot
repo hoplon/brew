@@ -9,7 +9,8 @@
 (require
  '[adzerk.bootlaces :refer :all]
  '[hoplon.boot-hoplon :refer :all]
- '[boot-semver.core :refer :all])
+ '[boot-semver.core :refer :all]
+ '[tolitius.boot-check :as check])
 
 (task-options!
  pom    {:project 'hoplon/brew
@@ -17,6 +18,21 @@
          :description "Experimental Hoplon Components."
          :url         "http://github.com/hoplon/brew"
          :scm {:url "http://github.com/hoplon/brew"}})
+
+(deftask ci-deps
+  "Force CI to fetch dependencies."
+  []
+  identity)
+
+(deftask tests
+  "Run code tests."
+  []
+  (comp
+    (check/with-kibit)
+    ;(check/with-yagni)
+    (check/with-eastwood)
+    (check/with-bikeshed)
+    ))
 
 (deftask deploy
   "Build project for deployment to clojars."
