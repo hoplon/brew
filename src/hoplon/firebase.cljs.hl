@@ -1,6 +1,6 @@
 (ns hoplon.firebase
-  (:require [javelin.core :as j]
-            [cuerdas.core :as str]
+  (:require [cuerdas.core :as str]
+            [firebase-cljs.auth :as fbauth]
             [firebase-cljs.database :as fbdb]
             [firebase-cljs.database.datasnapshot :as fbsnap]))
 
@@ -17,4 +17,4 @@
   (let [fbc   (cell nil)
         event (str/underscored (or event "value"))]
     (fbdb/listen ref event #(reset! fbc (fb->clj %)))
-    (j/cell= fbc #(fbdb/reset! ref %))))
+    (cell= fbc #(fbdb/reset! ref %))))
