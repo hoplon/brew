@@ -1,6 +1,6 @@
 (ns hoplon.bidi
   (:require [cuerdas.core :as s]
-            [bidi.bidi :as bidi]))
+            [bidi.bidi :as bidi])
   (:require-macros [hoplon.bidi :refer [route-tpl]]))
 
 (def match-route bidi/match-route)
