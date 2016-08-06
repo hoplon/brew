@@ -29,11 +29,13 @@
   [elem _ v]
   (style/setElementShown elem (boolean v)))
 
-;(defmethod do! :slide-toggle
-;  [elem _ v]
-;  (if v
-;    (.slideDown (.hide elem) "fast")
-;    (.slideUp elem "fast")))
+(defmethod do! :slide-toggle
+  [elem _ v]
+  (comp
+    (if v
+      (fxdom/swipe elem [0 0] (style/getSize elem))
+      (fxdom/swipe elem (style/getSize elem) [0 0]))
+    (style/setElementShown elem (boolean v))))
 
 (defmethod do! :fade-toggle
   [elem _ v]
