@@ -27,7 +27,7 @@
 (defmethod do! :class
   [elem _ kvs]
   (doseq [[c p?] (normalize-class kvs)]
-    (domcl/toggle elem (name c) (boolean p?))))
+    (domcl/enable elem (name c) (boolean p?))))
 
 (defmethod do! :toggle
   [elem _ v]
