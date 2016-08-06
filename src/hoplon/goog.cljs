@@ -4,11 +4,15 @@
             [goog.dom.forms :as domf]
             [goog.events :as events]
             [goog.fx.dom :as fxdom]
-            [goog.style :as style]))
+            [goog.style :as style]
+            [hoplon.core :refer [do!]])
+  (:require-macros
+    [javelin.core   :refer [with-let cell= prop-cell]]
+    [hoplon.core    :refer [cache-key with-timeout with-dom]]))
 
 ;; Helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; should go into hoplon.core it is generally usefull when working on classes
-(defn normalize-class [kvs]
+(defn- normalize-class [kvs]
   (let [->map #(zipmap % (repeat true))]
     (if (map? kvs)
       kvs
