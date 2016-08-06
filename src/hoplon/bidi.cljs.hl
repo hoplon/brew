@@ -1,7 +1,8 @@
 (ns hoplon.bidi
   (:require [cuerdas.core :as s]
-            [bidi.bidi :as bidi])
-  (:require-macros [hoplon.bidi :refer [route-tpl]]))
+            [bidi.bidi :as bidi]
+            [schema.core :as schema]
+            [bidi.schema :as bschema]))
 
 (def match-route bidi/match-route)
 
@@ -25,3 +26,8 @@
   [routes & routeopts]
   (aset js/window "location" "hash"
   (s/join ["#" (apply bidi/path-for routes routeopts)])))
+
+(defn validate
+  "Validate `routes` against bidi schema."
+  [routes]
+  (schema/validate bschema/RoutePair routes))
