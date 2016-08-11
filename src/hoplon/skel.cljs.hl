@@ -28,7 +28,7 @@
   (.on js/skel events f))
 
 ;; Skel Window Load Complete
-(.on (js/jQuery js/window) "load" #(reset! skel-loading false))
+(.addEventListener js/window "load" #(reset! skel-loading false))
 
 ;; Skel Toggle Mobile Cell
 (with-breakpoint -medium #(reset! skel-mobile false))
