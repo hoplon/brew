@@ -1,6 +1,7 @@
 (ns hoplon.bidi
-  (:require [bidi.schema :refer [RoutePair]]
-            [schema.core :as schema]))
+  (:require [hoplon.core]
+            [bidi.schema]
+            [schema.core]))
 
 (defmacro route-tpl
   "Provides templating based on bidi routes.
@@ -9,5 +10,5 @@
   [routes & clauses]
   (assert (even? (count clauses)))
     `(let []
-      (schema/validate RoutePair ~routes)
+      (validate ~routes)
       (hoplon.core/case-tpl (wrap-route ~routes *route*) ~@clauses)))
