@@ -1,8 +1,30 @@
 (ns hoplon.firebase
   (:require [cuerdas.core :as str]
+            [cljsjs.firebase]
+            [firebase-cljs.core :as fb]
             [firebase-cljs.auth :as fbauth]
             [firebase-cljs.database :as fbdb]
-            [firebase-cljs.database.datasnapshot :as fbsnap]))
+            [firebase-cljs.database.datasnapshot :as fbsnap])
+  (:require-macros [adzerk.env :as env]))
+
+(env/def
+  FIREBASE_API_KEY        nil
+  FIREBASE_AUTH_DOMAIN    nil
+  FIREBASE_DATABASE_URL   nil
+  FIREBASE_STORAGE_BUCKET nil)
+
+(def FIREBASE_ENV
+  (and FIREBASE_API_KEY
+       FIREBASE_AUTH_DOMAIN
+       FIREBASE_DATABASE_URL
+       FIREBASE_STORAGE_BUCKET))
+
+(when FIREBASE_ENV
+  (fb/init
+    {:apiKey FIREBASE_API_KEY
+     :authDomain FIREBASE_AUTH_DOMAIN
+     :databaseURL FIREBASE_DATABASE_URL
+     :storageBucket FIREBASE_STORAGE_BUCKET}))
 
 (defn fb->clj
   "Converts a Firebase DataSnapshot into a clj data structure."
@@ -12,7 +34,11 @@
 (defn fb-cell
   "Returns a formula cell bound to the Firebase Reference.
   Takes an optional Firebase `event` to limit which event updates the cell.
-  Attempting to call `reset!` on the cell updates the Firebase Database."
+  Attempting to call `reset!` on the cell updates the Firebase Database.
+
+  (This can only be used outside of auth state change when `ref` is public,
+   ie. not read secured by Firebase Authentication. Listeners for secured ref's
+   should be set from the auth login handler.)"
   [ref & [event]]
   (let [fbc   (cell nil)
         event (str/underscored (or event "value"))]
