@@ -8,24 +8,46 @@
 
 (def ^:dynamic *route* (route-cell ""))
 
-(defn wrap-route
+(defn- wrap-route
   "Takes `routes` and a (route-cell).
    Returns formula cell containing current matching handler."
   [routes routec]
   (javelin.core/cell=
     (:handler (bidi/match-route routes (s/strip-prefix routec "#")))))
 
-(defn active-route?
-  "Takes `routes` and `route`, returns formula cell.
+(defn- wrap-route-params
+  "Takes `routes` and a (route-cell).
+   Returns formula cell containing current route params."
+  [routes routec]
+  (javelin.core/cell=
+    (:route-params (bidi/match-route routes (s/strip-prefix routec "#")))))
+
+(defn route
+  "Takes `routes`, returns a formula cell with the current route handler."
+  [routes]
+  (wrap-route routes *route*))
+
+(defn route-params
+  "Takes `routes`, returns a formula cell with the current route params."
+  [routes]
+  (wrap-route-params routes *route*))
+
+(defn route?
+  "Takes `routes` and `handler`, returns formula cell.
    Formula cell is true if `route` is currently active."
-  [routes route]
-  (javelin.core/cell= (= route (wrap-route routes *route*))))
+  [routes handler]
+  (javelin.core/cell= (= route (route routes))))
+
+(defn mkroute
+  "Generate a valid route. (includes '#' character)"
+  [routes & routeopts]
+  (s/join ["#" (apply bidi/path-for routes routeopts)]))
 
 (defn route!
   "Change URL hash, does not reload the page."
   [routes & routeopts]
   (aset js/window "location" "hash"
-  (s/join ["#" (apply bidi/path-for routes routeopts)])))
+    (apply mkroute routes routeopts)))
 
 (defn validate
   "Validate `routes` against bidi schema."
