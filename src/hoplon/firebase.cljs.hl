@@ -40,8 +40,7 @@
    ie. not read secured by Firebase Authentication. Listeners for secured ref's
    should be set from the auth login handler.)"
   [ref & [event]]
-  (as-> (cell nil) fbc
-    (fbdb/listen ref
-      (str/underscored (or event "value"))
-      #(reset! fbc (fb->clj %)))
+  (let [fbc   (cell nil)
+        event (str/underscored (or event "value"))]
+    (fbdb/listen ref event #(reset! fbc (fb->clj %)))
     (cell= fbc #(fbdb/reset! ref %))))
