@@ -38,8 +38,8 @@
   "Build project for deployment to clojars."
   []
   (comp
-    (version :minor 'inc :patch 'zero)
-    (hoplon  :manifest true)
+    (version)
+    (hoplon :manifest true)
     (build-jar)
     (push-release)))
 
