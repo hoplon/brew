@@ -16,9 +16,8 @@
 
 (task-options!
  pom    {:project 'hoplon/brew
-         :version (get-version)
          :description "Experimental Hoplon Components."
-         :url         "http://github.com/hoplon/brew"
+         :url "http://github.com/hoplon/brew"
          :scm {:url "http://github.com/hoplon/brew"}})
 
 (deftask ci-deps
@@ -40,8 +39,8 @@
   "Build project for deployment to clojars."
   []
   (comp
-    (version)
-    (hoplon :manifest true)
+    (version :minor 'inc :patch 'zero)
+    (hoplon  :manifest true)
     (build-jar)
     (push-release)))
 
