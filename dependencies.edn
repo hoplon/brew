@@ -11,4 +11,4 @@
  [funcool/cuerdas           "0.8.0"]
  [prismatic/schema          "1.1.2"]
  [cljsjs/skel               "3.0.1-0"]
- [degree9/firebase-cljs     "1.0.0"]]
+ [degree9/firebase-cljs     "1.2.0"]]
