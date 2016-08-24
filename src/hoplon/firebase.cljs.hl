@@ -44,3 +44,12 @@
         event (str/underscored (or event "value"))]
     (fbdb/listen ref event #(reset! fbc (fb->clj %)))
     (cell= fbc #(fbdb/reset! ref %))))
+
+(defn fbonce-cell
+  "Returns a formula cell unbound to the Firebase Reference.
+  Takes an optional Firebase `event` to limit which event updates the cell."
+  [ref & [event]]
+  (let [fbc   (cell nil)
+        event (str/underscored (or event "value"))]
+    (fbdb/listen-once ref event #(reset! fbc (fb->clj %)))
+    (cell= fbc)))
