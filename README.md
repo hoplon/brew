@@ -36,15 +36,8 @@ May be:
 
 ```
 # build and install locally
-boot build-jar
+boot develop
 ```
-```
-# push snapshot
-boot build-jar push-snapshot
-```
-```
-# push release
-boot build-jar push-release
 ```
 
 ## License
