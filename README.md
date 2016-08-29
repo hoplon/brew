@@ -38,7 +38,6 @@ May be:
 # build and install locally
 boot develop
 ```
-```
 
 ## License
 
