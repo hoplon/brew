@@ -53,3 +53,6 @@
         event (str/underscored (or event "value"))]
     (fbdb/listen-once ref event #(reset! fbc (fb->clj %)))
     (cell= fbc)))
+
+(defn when-auth [auth callback]
+  (fbauth/auth-changed auth callback))
