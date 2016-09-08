@@ -3,9 +3,11 @@
 
 (defmacro with-auth!
   "Attaches callbacks to the `auth` state.
-  Requires login callback, accepts optional logout callback."
+  Requires login callback, accepts optional logout callback.
+
+  Login callback must accept one argument which will be the auth data.
+  Logout callback does not accept arguments."
   [auth login & [logout]]
   `(hl/with-init!
-    ('fbauth/auth-changed
-      ~auth
+    (when-auth ~auth
       #(if % (~login %) ~(when logout `(~logout))))))
