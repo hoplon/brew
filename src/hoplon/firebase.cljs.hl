@@ -7,6 +7,7 @@
             [firebase-cljs.database.datasnapshot :as fbsnap])
   (:require-macros [adzerk.env :as env]))
 
+;; Firebase Init ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (env/def
   FIREBASE_API_KEY        nil
   FIREBASE_AUTH_DOMAIN    nil
@@ -26,10 +27,34 @@
      :databaseURL FIREBASE_DATABASE_URL
      :storageBucket FIREBASE_STORAGE_BUCKET}))
 
+;; Firebase Services ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(def ^:dynamic *auth* (when FIREBASE_ENV (fb/get-auth)))
+
+(def ^:dynamic *app*  (when FIREBASE_ENV (fb/get-app)))
+
+(def ^:dynamic *db*   (when FIREBASE_ENV (fb/get-db)))
+
+;;todo: storage api
+
+;; Internal Helper Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn- when-auth [auth callback]
+  (fbauth/auth-changed auth callback))
+
+;; Firebase Helper Fn's ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn fb->clj
   "Converts a Firebase DataSnapshot into a clj data structure."
   [fb]
   (-> fb fbsnap/val (js->clj :keywordize-keys true)))
+
+(defn fb-ref
+  "Returns a Firebase Reference from `korks`.
+
+  `korks` is a vector of keywordized paths in the database.
+  ie. [:path :from :root]
+
+  Optionally accepts a Firebase Database as first argument."
+  ([korks] (fb-ref *db* korks))
+  ([db korks] (fbdb/get-in db korks)))
 
 (defn fb-cell
   "Returns a formula cell bound to the Firebase Reference.
@@ -53,6 +78,3 @@
         event (str/underscored (or event "value"))]
     (fbdb/listen-once ref event #(reset! fbc (fb->clj %)))
     (cell= fbc)))
-
-(defn when-auth [auth callback]
-  (fbauth/auth-changed auth callback))
