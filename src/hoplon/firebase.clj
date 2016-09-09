@@ -5,9 +5,15 @@
   "Attaches callbacks to the `auth` state.
   Requires login callback, accepts optional logout callback.
 
-  Login callback must accept one argument which will be the auth data.
-  Logout callback does not accept arguments."
-  [auth login & [logout]]
-  `(hl/with-init!
-    (when-auth ~auth
-      #(if % (~login %) ~(when logout `(~logout))))))
+  `login` must accept one argument which will be the auth data.
+  `logout` must not accept arguments.
+
+  When specifying `auth` both `login` and `logout` must be provided."
+  ([auth login logout]
+    `(hl/with-init!
+      (when-auth ~auth
+        #(if % (~login %) ~(when logout `(~logout))))))
+  ([login logout]
+    `(with-auth! *auth* ~login ~logout))
+  ([login]
+    `(with-auth! *auth* ~login nil)))

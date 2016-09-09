@@ -37,8 +37,11 @@
 ;;todo: storage api
 
 ;; Internal Helper Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn- when-auth [auth callback]
-  (fbauth/auth-changed auth callback))
+(defn- when-auth
+  ([callback]
+   (when-auth *auth* callback))
+  ([auth callback]
+   (fbauth/auth-changed auth callback)))
 
 ;; Firebase Helper Fn's ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn fb->clj
