@@ -81,3 +81,10 @@
         event (str/underscored (or event "value"))]
     (fbdb/listen-once ref event #(reset! fbc (fb->clj %)))
     (cell= fbc)))
+
+(defn fb-default
+  "Returns a promise which will set the value of `ref` to `default` if it
+  does not exist."
+  [ref default]
+  (fbdb/listen-promise ref "value"
+    #(when-not (fbsnap/exists %) (fbdb/reset! ref default))))
