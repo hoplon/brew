@@ -50,7 +50,7 @@
   (-> fb fbsnap/val (js->clj :keywordize-keys true)))
 
 (defn fb-ref
-  "Returns a Firebase Reference from `korks`.
+  "Returns a Firebase Reference to `korks`.
 
   `korks` is a vector of keywordized paths in the database.
   ie. [:path :from :root]
@@ -58,6 +58,14 @@
   Optionally accepts a Firebase Database as first argument."
   ([korks] (fb-ref *db* korks))
   ([db korks] (fbdb/get-in db korks)))
+
+(defn fb-reset!
+  "Listens to `ref` and updates a `state` cell with the value.
+  Takes an optional Firebase `event` to limit which event updates `state`.
+  Returns the callback used to update `state`."
+  [ref state & [event]]
+  (let [event (str/underscored (or event "value"))]
+    (fbdb/listen ref event #(reset! state (fb->clj %)))))
 
 (defn fb-cell
   "Returns a formula cell bound to the Firebase Reference.
@@ -70,7 +78,7 @@
   [ref & [event]]
   (let [fbc   (cell nil)
         event (str/underscored (or event "value"))]
-    (fbdb/listen ref event #(reset! fbc (fb->clj %)))
+    (fb-reset! ref fbc event)
     (cell= fbc #(fbdb/reset! ref %))))
 
 (defn fbonce-cell
@@ -80,6 +88,17 @@
   (let [fbc   (cell nil)
         event (str/underscored (or event "value"))]
     (fbdb/listen-once ref event #(reset! fbc (fb->clj %)))
+    (cell= fbc)))
+
+(defn fbwhen-cell
+  "Returns a formula cell unbound to the Firebase Reference when `pred` is true.
+  Takes an optional Firebase `event` to limit which event updates the cell."
+  [pred ref & [event]]
+  (let [fbc (cell nil)
+        event (str/underscored (or event "value"))]
+    (cell=
+      (when pred
+        (fbdb/listen-once ref event ~#(reset! fbc (fb->clj %)))))
     (cell= fbc)))
 
 (defn fb-default
