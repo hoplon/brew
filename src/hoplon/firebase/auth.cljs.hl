@@ -1,0 +1,87 @@
+(ns hoplon.firebase.auth
+  (:require [cljsjs.firebase]
+            [firebase-cljs.core :as fb]
+            [firebase-cljs.auth :as fbauth]
+            [firebase-cljs.auth.error :as fbautherr]
+            [firebase-cljs.auth.provider :as fbprov]
+            [firebase-cljs.database :as fbdb]
+            [firebase-cljs.user :as fbuser]
+            [hoplon.firebase :as hfb])
+  (:require-macros [hoplon.firebase :refer [with-auth!]]))
+
+;; Firebase Authentication Cells ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(def ^:dynamic *user-auth*    (cell nil))
+
+(def ^:dynamic *user-fb*      (cell nil))
+
+(def ^:dynamic *pending-link* (cell nil))
+
+;; Firebase Authentication Providers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(def ^:dynamic *facebook*     (fbprov/facebook))
+
+(def ^:dynamic *github*       (fbprov/github))
+
+(def ^:dynamic *google*       (fbprov/google))
+
+(def ^:dynamic *twitter*      (fbprov/twitter))
+
+(fbprov/scope-email *google* :google)
+(fbprov/scope-email *github* :github)
+(fbprov/scope-email *facebook* :facebook)
+
+(fbprov/scope-profile *google* :google)
+(fbprov/scope-profile *github* :github)
+(fbprov/scope-profile *facebook* :facebook)
+
+;; Firebase Authentication Helper Fn's ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn- handle-link
+  [err]
+  (let [cred (aget err "credential")
+        email (aget err "email")
+        pending {:cred cred :email email}]
+    (.then
+      (fbauth/providers-by-email hfb/*auth* email)
+      #(reset! *pending-link*
+        (assoc pending
+          :providers (set %)
+          :msg (fbautherr/message err))))))
+
+(defn- handle-login
+  [auth & [ref default]]
+  (let [ref (when ref (fbdb/get-in ref (fbuser/uid auth)))]
+    (reset! *user-auth* auth)
+    (when (and ref default)
+      (hfb/fb-default ref default))
+    (when ref
+      (fbdb/listen-promise ref "value" #(reset! *user-fb* (hfb/fb->clj %))))))
+
+(defn- handle-logout
+  [& [ref]]
+  (reset! *user-auth* nil)
+  (when ref
+    (reset! *user-fb* nil)
+    (fbdb/disable-listener! ref "value")))
+
+;; Firebase Authentication Public API ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn login!
+  [provider & [auth]]
+  (.catch
+    (fbauth/login-popup (or auth hfb/*auth*) provider)
+    #(case (keyword (fbautherr/code %))
+      :auth/account-exists-with-different-credential (handle-link %)
+      (throw (fbautherr/message %)))))
+
+(defn logout! [& [auth]]
+  (fbauth/logout (or auth hfb/*auth*)))
+
+(defn fb-auth! [& [ref default]]
+  (with-auth! #(handle-login % ref default) #(handle-logout ref)))
+
+;; Firebase Authentication Attributes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defmethod hoplon.core/do! :fb-login
+  [elem _ v]
+  (.addEventListener elem "click" #(login! v)))
+
+(defmethod hoplon.core/do! :fb-logout
+  [elem _ v]
+  (.addEventListener elem "click" #(logout!)))

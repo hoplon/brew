@@ -9,7 +9,9 @@
 (require
  '[adzerk.bootlaces :refer :all]
  '[hoplon.boot-hoplon :refer :all]
- '[boot-semver.core :refer :all]
+ '[degree9.boot-semver :refer :all]
+ '[degree9.boot-semgit :refer :all]
+ '[degree9.boot-semgit.workflow :refer :all]
  '[tolitius.boot-check :as check])
 
 (task-options!
