@@ -64,6 +64,19 @@
 
 ;; Firebase Authentication Public API ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn login!
+  "Login in a user using popup based workflow.
+  `provider` is required and can be any valid Firebase Provider:
+
+        *facebook*
+        *github*
+        *google*
+        *twitter*
+
+  Accepts an optional `auth`, Firebase Authentication Service.
+
+  An attribute is provided for convenience `:fb-login`, which accepts any of the
+  above Firebase Providers and will cause the node's click event to call
+  this function."
   [provider & [auth]]
   (.catch
     (fbauth/login-popup (or auth hfb/*auth*) provider)
@@ -71,10 +84,29 @@
       :auth/account-exists-with-different-credential (handle-link %)
       (throw (fbautherr/message %)))))
 
-(defn logout! [& [auth]]
+(defn logout!
+  "Logout a user. Accepts an optional `auth`, Firebase Authentication Service.
+
+  An attribute is provided for convenience `:fb-logout`, any value will cause
+  the node's click event to call this function."
+  [& [auth]]
   (fbauth/logout (or auth hfb/*auth*)))
 
-(defn fb-auth! [& [ref default]]
+(defn fb-auth!
+  "An automated Firebase Authentication workflow. On successful authentication
+  `*user-auth*` will be populated with the Firebase.User object.
+
+  Optionally accepts a `ref` which can be used to locate user data in the
+  Firebase Database, if `ref` exists `*user-fb*` will be populated with the
+  database value. `ref` should be the parent node where users are indexed
+  by uid.
+
+  Optionally accepts a `default` user map which will be persisted to database if
+  `ref` does not exist. In this case `default` will be returned and will
+  populate `*user-fb*`.
+
+  On logout `*user-auth*` and `*user-fb*` are set to `nil`."
+  [& [ref default]]
   (with-auth! #(handle-login % ref default) #(handle-logout ref)))
 
 ;; Firebase Authentication Attributes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
