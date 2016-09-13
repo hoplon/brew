@@ -58,9 +58,10 @@
 (defn- handle-logout
   [& [ref]]
   (reset! *user-auth* nil)
+  (reset! *user-cred* nil)
   (when ref
-    (reset! *user-fb* nil)
-    (fbdb/disable-listener! ref "value")))
+    (fbdb/disable-listener! ref "value")
+    (reset! *user-fb* nil)))
 
 ;; Firebase Authentication Public API ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn login!
@@ -78,11 +79,12 @@
   above Firebase Providers and will cause the node's click event to call
   this function."
   [provider & [auth]]
-  (.catch
-    (fbauth/login-popup (or auth hfb/*auth*) provider)
-    #(case (keyword (fbautherr/code %))
-      :auth/account-exists-with-different-credential (handle-link %)
-      (throw (fbautherr/message %)))))
+  (-> (fbauth/login-popup (or auth hfb/*auth*) provider)
+      (.then #(reset! *user-cred* (aget % "credential")))
+      (.catch
+        #(case (keyword (fbautherr/code %))
+          :auth/account-exists-with-different-credential (handle-link %)
+          (throw (fbautherr/message %))))))
 
 (defn logout!
   "Logout a user. Accepts an optional `auth`, Firebase Authentication Service.
