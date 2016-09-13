@@ -12,6 +12,8 @@
 ;; Firebase Authentication Cells ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def ^:dynamic *user-auth*    (cell nil))
 
+(def ^:dynamic *user-cred*    (cell nil))
+
 (def ^:dynamic *user-fb*      (cell nil))
 
 (def ^:dynamic *pending-link* (cell nil))
