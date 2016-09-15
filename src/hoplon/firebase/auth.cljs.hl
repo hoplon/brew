@@ -51,6 +51,7 @@
 (defn- handle-login
   [auth & [ref default]]
   (let [ref (when ref (fbdb/get-in ref (fbuser/uid auth)))]
+    (when (nil? @*user-auth*) (reset! *user-auth* auth))
     (when (and ref default)
       (hfb/fb-default ref default))
     (when ref
