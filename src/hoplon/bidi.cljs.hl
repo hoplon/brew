@@ -36,7 +36,7 @@
   "Takes `routes` and `handler`, returns formula cell.
    Formula cell is true if `route` is currently active."
   [routes handler]
-  (javelin.core/cell= (= route (route routes))))
+  (javelin.core/cell= (= *route* (route routes))))
 
 (defn mkroute
   "Generate a valid route. (includes '#' character)"
