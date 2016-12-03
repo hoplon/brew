@@ -51,7 +51,7 @@
 (defn- handle-login
   [auth & [ref default]]
   (let [ref (when ref (fbdb/get-in ref (fbuser/uid auth)))]
-    (reset! *user-auth* auth)
+    (when (nil? @*user-auth*) (reset! *user-auth* auth))
     (when (and ref default)
       (hfb/fb-default ref default))
     (when ref
@@ -59,11 +59,12 @@
 
 (defn- handle-logout
   [& [ref]]
-  (reset! *user-auth* nil)
-  (reset! *user-cred* nil)
-  (when ref
-    (fbdb/disable-listener! ref "value")
-    (reset! *user-fb* nil)))
+  (dosync
+   (reset! *user-auth* nil)
+   (reset! *user-cred* nil)
+   (when ref
+     (fbdb/disable-listener! ref "value")
+     (reset! *user-fb* nil))))
 
 ;; Firebase Authentication Public API ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn login!
@@ -82,7 +83,10 @@
   this function."
   [provider & [auth]]
   (-> (fbauth/login-popup (or auth hfb/*auth*) provider)
-      (.then #(reset! *user-cred* (aget % "credential")))
+      (.then
+       #(dosync
+         (reset! *user-auth* (aget % "user"))
+         (reset! *user-cred* (aget % "credential"))))
       (.catch
         #(case (keyword (fbautherr/code %))
           :auth/account-exists-with-different-credential (handle-link %)
