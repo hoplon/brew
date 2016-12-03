@@ -6,7 +6,9 @@
 
 (def match-route bidi/match-route)
 
-(def ^:dynamic *route* (route-cell ""))
+(def ^:dynamic *route*
+  "Default route cell, without prefix."
+  (route-cell ""))
 
 (defn- wrap-route
   "Takes `routes` and a (route-cell).
@@ -36,7 +38,8 @@
   "Takes `routes` and `handler`, returns formula cell.
    Formula cell is true if `route` is currently active."
   [routes handler]
-  (javelin.core/cell= (= *route* (route routes))))
+  (let [route (route routes)]
+    (javelin.core/cell= (= route handler))))
 
 (defn mkroute
   "Generate a valid route. (includes '#' character)"
