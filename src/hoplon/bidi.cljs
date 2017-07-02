@@ -1,25 +1,29 @@
 (ns hoplon.bidi
-  (:require [cuerdas.core :as s]
+  (:require [hoplon.core :as hl]
+            [javelin.core :as j]
+            [cuerdas.core :as s]
             [bidi.bidi :as bidi]
             [schema.core :as schema]
             [bidi.schema :as bschema]))
 
 (def match-route bidi/match-route)
 
-(def ^:dynamic *route* (route-cell ""))
+(def ^:dynamic *route*
+  "Default route cell, without prefix."
+  (hl/route-cell ""))
 
 (defn- wrap-route
   "Takes `routes` and a (route-cell).
    Returns formula cell containing current matching handler."
   [routes routec]
-  (javelin.core/cell=
+  (j/cell=
     (:handler (bidi/match-route routes (s/strip-prefix routec "#")))))
 
 (defn- wrap-route-params
   "Takes `routes` and a (route-cell).
    Returns formula cell containing current route params."
   [routes routec]
-  (javelin.core/cell=
+  (j/cell=
     (:route-params (bidi/match-route routes (s/strip-prefix routec "#")))))
 
 (defn route
@@ -36,7 +40,8 @@
   "Takes `routes` and `handler`, returns formula cell.
    Formula cell is true if `route` is currently active."
   [routes handler]
-  (javelin.core/cell= (= *route* (route routes))))
+  (let [route (route routes)]
+    (j/cell= (= route handler))))
 
 (defn mkroute
   "Generate a valid route. (includes '#' character)"

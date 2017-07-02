@@ -1,5 +1,6 @@
 (ns hoplon.firebase.auth
-  (:require [cljsjs.firebase]
+  (:require [javelin.core :as j]
+            [cljsjs.firebase]
             [firebase-cljs.core :as fb]
             [firebase-cljs.auth :as fbauth]
             [firebase-cljs.auth.error :as fbautherr]
@@ -10,13 +11,13 @@
   (:require-macros [hoplon.firebase :refer [with-auth!]]))
 
 ;; Firebase Authentication Cells ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(def ^:dynamic *user-auth*    (cell nil))
+(def ^:dynamic *user-auth*    (j/cell nil))
 
-(def ^:dynamic *user-cred*    (cell nil))
+(def ^:dynamic *user-cred*    (j/cell nil))
 
-(def ^:dynamic *user-fb*      (cell nil))
+(def ^:dynamic *user-fb*      (j/cell nil))
 
-(def ^:dynamic *pending-link* (cell nil))
+(def ^:dynamic *pending-link* (j/cell nil))
 
 ;; Firebase Authentication Providers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def ^:dynamic *facebook*     (fbprov/facebook))
