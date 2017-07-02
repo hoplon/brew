@@ -1,5 +1,6 @@
 (ns hoplon.firebase
-  (:require [cuerdas.core :as str]
+  (:require [javelin.core :as j]
+            [cuerdas.core :as str]
             [cljsjs.firebase]
             [firebase-cljs.core :as fb]
             [firebase-cljs.auth :as fbauth]
@@ -87,19 +88,19 @@
    ie. not read secured by Firebase Authentication. Listeners for secured ref's
    should be set from the auth login handler.)"
   [ref & [event]]
-  (let [fbc   (cell nil)
+  (let [fbc   (j/cell nil)
         event (str/underscored (or event "value"))]
     (fbdb/listen ref event #(reset! fbc (fb->clj %)))
-    (cell= fbc #(fbdb/reset! ref %))))
+    (j/cell= fbc #(fbdb/reset! ref %))))
 
 (defn fbonce-cell
   "Returns a formula cell unbound to the Firebase Reference.
   Takes an optional Firebase `event` to limit which event updates the cell."
   [ref & [event]]
-  (let [fbc   (cell nil)
+  (let [fbc   (j/cell nil)
         event (str/underscored (or event "value"))]
     (fbdb/listen-once ref event #(reset! fbc (fb->clj %)))
-    (cell= fbc)))
+    (j/cell= fbc)))
 
 (defn fb-sync
   "Returns a formula cell unbound to the Firebase Reference.
@@ -107,23 +108,23 @@
   the Firebase Database.
   Takes an optional Firebase `event` to limit which event updates the cell."
   [ref & [event]]
-  (let [fbc   (cell nil)
+  (let [fbc   (j/cell nil)
         event (str/underscored (or event "value"))
         sync  #(fbdb/listen-once ref event
                 (fn [fbdat] (reset! fbc (fb->clj fbdat))))]
     (sync)
-    (cell= fbc #(dosync (fbdb/reset! ref %) (sync)))))
+    (j/cell= fbc #(dosync (fbdb/reset! ref %) (sync)))))
 
 (defn fbwhen-cell
   "Returns a formula cell unbound to the Firebase Reference when `pred` is true.
   Takes an optional Firebase `event` to limit which event updates the cell."
   [pred ref & [event]]
-  (let [fbc (cell nil)
+  (let [fbc (j/cell nil)
         event (str/underscored (or event "value"))]
-    (cell=
+    (j/cell=
       (when pred
         (fbdb/listen-once ref event ~#(reset! fbc (fb->clj %)))))
-    (cell= fbc)))
+    (j/cell= fbc)))
 
 (defn fb-default
   "Returns a promise which will set the value of `ref` to `default` if it
