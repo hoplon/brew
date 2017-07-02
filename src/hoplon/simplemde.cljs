@@ -1,5 +1,7 @@
 (ns hoplon.simplemde
-  (:require [cljsjs.simplemde]))
+  (:require [hoplon.core :as hl]
+            [javelin.core :as j]
+            [cljsjs.simplemde]))
 
 (defn editor!
   "Creates a SimpleMDE editor."
@@ -12,10 +14,10 @@
         change   (:change attr)
         blur     (:blur attr)
         attr     (dissoc attr :content :change :blur)
-        editor   (cell nil)
-        textarea (textarea :css {:display "none"} kids)]
-    (cell= (when (and content editor) (.value editor content)))
-    (with-dom textarea
+        editor   (j/cell nil)
+        textarea (hl/textarea :css {:display "none"} kids)]
+    (j/cell= (when (and content editor) (.value editor content)))
+    (hl/with-dom textarea
       (let [sme (editor! (assoc attr :element textarea))
             cm  (.-codemirror sme)]
         (reset! editor sme)
