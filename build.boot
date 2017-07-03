@@ -42,9 +42,9 @@
   "Build project for local development."
   []
   (comp
-    (watch)
     (version :develop true
              :minor 'inc
              :patch 'zero
              :pre-release 'snapshot)
+    (watch)
     (build-jar)))
