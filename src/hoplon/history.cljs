@@ -24,5 +24,5 @@
        historyc (j/cell (.getToken history))]
   (j/with-let [_ (j/cell= historyc (fn [token] (.setToken history token)))]
    (events/listen history EventType.NAVIGATE
-    (fn [event] (.log js/console event) (reset! historyc (.-token event))))
+    (fn [event] (reset! historyc (.-token event))))
    (.setEnabled history true))))
