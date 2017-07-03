@@ -96,19 +96,6 @@
     (sync)
     (j/cell= fbc #(j/dosync (fbdb/reset! ref %) (sync)))))
 
-(defn fb-sync
-  "Returns a formula cell unbound to the Firebase Reference.
-  This variant will fetch changes and update only after persisting changes to
-  the Firebase Database.
-  Takes an optional Firebase `event` to limit which event updates the cell."
-  [ref & [event]]
-  (let [fbc   (cell nil)
-        event (str/underscored (or event "value"))
-        sync  #(fbdb/listen-once ref event
-                (fn [fbdat] (reset! fbc (fb->clj fbdat))))]
-    (sync)
-    (cell= fbc #(dosync (fbdb/reset! ref %) (sync)))))
-
 (defn fbwhen-cell
   "Returns a formula cell unbound to the Firebase Reference when `pred` is true.
   Takes an optional Firebase `event` to limit which event updates the cell."
