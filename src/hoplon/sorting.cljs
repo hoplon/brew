@@ -12,7 +12,7 @@
   (-> data (sort) (index-coll)))
 
 (defn sort-by-indexed [data sort]
-  (-> data (sort-by sort) (index-coll)))
+  (->> data (sort-by sort) (index-coll)))
 
 (defn sorted-cell
   "Returns a formula cell which sorts and indexes a collection."
