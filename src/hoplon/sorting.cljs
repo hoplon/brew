@@ -5,7 +5,7 @@
   (->> data (map-indexed vector) (into {})))
 
 (defn indexed-cell
-  "Returns a formula cell which sorts and indexes a collection."
+  "Returns a formula cell which indexes a collection."
   [data] (j/cell= (index-coll data)))
 
 (defn sort-indexed [data]
