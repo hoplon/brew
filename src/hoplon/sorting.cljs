@@ -17,4 +17,4 @@
 (defn sorted-cell
   "Returns a formula cell which sorts and indexes a collection."
   ([data] (j/cell= (sort-indexed data)))
-  ([data sort] (j/cell= (sort-by-indexed data sort))))
+  ([sort data] (j/cell= (sort-by-indexed data sort))))
