@@ -14,7 +14,7 @@
 (defn history-cell
  "A cell analagous to hoplon.core/route-cell, using Google Closure History API.
 
-  Optionally supports `:prefix` which will set an Html5History prefix, default `""`.
+  Optionally supports `:prefix` which will set an Html5History prefix.
 
   Optionally supports `:fragment` which will include page fragments in HTML5 browsers, default `true`.
   This keeps routing backwards compatible with older browsers,
