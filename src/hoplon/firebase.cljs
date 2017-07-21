@@ -8,25 +8,6 @@
             [firebase-cljs.database.datasnapshot :as fbsnap])
   (:require-macros [adzerk.env :as env]))
 
-(env/def
-  FIREBASE_API_KEY        nil
-  FIREBASE_AUTH_DOMAIN    nil
-  FIREBASE_DATABASE_URL   nil
-  FIREBASE_STORAGE_BUCKET nil)
-
-(def FIREBASE_ENV
-  (and FIREBASE_API_KEY
-       FIREBASE_AUTH_DOMAIN
-       FIREBASE_DATABASE_URL
-       FIREBASE_STORAGE_BUCKET))
-
-(when FIREBASE_ENV
-  (fb/init
-    {:apiKey FIREBASE_API_KEY
-     :authDomain FIREBASE_AUTH_DOMAIN
-     :databaseURL FIREBASE_DATABASE_URL
-     :storageBucket FIREBASE_STORAGE_BUCKET}))
-
 ;; Firebase Init ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (env/def
   FIREBASE_API_KEY        nil
