@@ -1,7 +1,5 @@
-(ns hoplon.skel
-  (:require [clojure.string :as s]))
+(ns hoplon.skel)
 
-(defmacro with-breakpoint [& bp]
-  (let [f (last bp)
-        e (s/join " " (mapv str (butlast bp)))]
-    `(on ~e ~f)))
+(defmacro with-breakpoint [bp f]
+  (let [events (str bp)]
+    `(on ~events ~f)))

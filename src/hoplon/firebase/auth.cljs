@@ -60,7 +60,7 @@
 
 (defn- handle-logout
   [& [ref]]
-  (dosync
+  (j/dosync
    (reset! *user-auth* nil)
    (reset! *user-cred* nil)
    (when ref
@@ -85,7 +85,7 @@
   [provider & [auth]]
   (-> (fbauth/login-popup (or auth hfb/*auth*) provider)
       (.then
-       #(dosync
+       #(j/dosync
          (reset! *user-auth* (aget % "user"))
          (reset! *user-cred* (aget % "credential"))))
       (.catch
