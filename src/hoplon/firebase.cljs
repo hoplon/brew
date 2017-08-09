@@ -107,6 +107,17 @@
         (fbdb/listen-once ref event ~#(reset! fbc (fb->clj %)))))
     (j/cell= fbc)))
 
+(defn fbif-cell
+  "Returns a formula cell unbound to the Firebase Reference when `pred` is true.
+  Takes an optional Firebase `event` to limit which event updates the cell."
+  [pred aref bref & [event]]
+  (let [fbc (j/cell nil)
+        event (str/snake (or event "value"))
+        sync  (fn [ref] (fbdb/listen-once ref event
+                (fn [fbdat] (reset! fbc (fb->clj fbdat)))))]
+    (j/cell= (sync (if pred aref bref)))
+    (j/cell= fbc)))
+
 (defn fb-default
   "Returns a promise which will set the value of `ref` to `default` if it
   does not exist."
