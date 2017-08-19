@@ -1,5 +1,6 @@
 (ns hoplon.firebase.auth
   (:require [javelin.core :as j]
+            [hoplon.core :as h]
             [cljsjs.firebase]
             [firebase-cljs.core :as fb]
             [firebase-cljs.auth :as fbauth]
