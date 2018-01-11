@@ -1,4 +1,4 @@
-[[org.clojure/clojurescript "1.7.228"]
+[[org.clojure/clojurescript "1.9.946"]
  [adzerk/boot-cljs          "2.0.0"         :scope "test"]
  [adzerk/env                "0.4.0"]
  [bidi                      "2.1.2"]
@@ -8,6 +8,6 @@
  [degree9/boot-semgit       "1.2.1"         :scope "test"]
  [degree9/firebase-cljs     "1.3.0"]
  [funcool/cuerdas           "2.0.3"]
- [hoplon/hoplon             "7.0.3"]
+ [hoplon/hoplon             "7.1.0"]
  [prismatic/schema          "1.1.6"]
  [tolitius/boot-check       "0.1.4"         :scope "test"]]

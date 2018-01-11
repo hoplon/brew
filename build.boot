@@ -27,8 +27,8 @@
     (check/with-kibit)
     ;(check/with-yagni)
     (check/with-eastwood)
-    (check/with-bikeshed)
-    ))
+    (check/with-bikeshed)))
+
 
 (deftask deploy
   "Build project for deployment to clojars."
@@ -43,8 +43,6 @@
   []
   (comp
     (version :develop true
-             :minor 'inc
-             :patch 'zero
              :pre-release 'snapshot)
     (watch)
     (build-jar)))
