@@ -1,5 +1,6 @@
 (ns hoplon.bidi
   (:require [hoplon.core :as hl]
+            [hoplon.history :as history]
             [javelin.core :as j]
             [cuerdas.core :as s]
             [bidi.bidi :as bidi]
@@ -10,7 +11,7 @@
 
 (def ^:dynamic *route*
   "Default route cell, without prefix."
-  (hl/route-cell ""))
+  (history/history-cell ""))
 
 (defn- wrap-route
   "Takes `routes` and a (route-cell).

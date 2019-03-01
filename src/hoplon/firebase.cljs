@@ -114,7 +114,7 @@
   (let [fbc (j/cell nil)
         event (str/snake (or event "value"))
         sync  (fn [ref] (fbdb/listen-once ref event
-                (fn [fbdat] (reset! fbc (fb->clj fbdat)))))]
+                         (fn [fbdat] (reset! fbc (fb->clj fbdat)))))]
     (j/cell= (sync (if pred aref bref)))
     (j/cell= fbc)))
 
