@@ -3,7 +3,7 @@
 
 [](dependency)
 ```clojure
-[hoplon/brew "0.3.0"] ;; latest release
+[hoplon/brew "7.2.0-SNAPSHOT"] ;; latest release
 ```
 [](/dependency)
 
