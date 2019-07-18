@@ -19,14 +19,15 @@
 ;        (fn [fdata]
 ;          (conj (remove (partial compare-index :_id data) fdata) data))))
 
-(defn feathers-cell [app service & params]
+(defn feathers-cell [service & params]
   (let [fcell   (j/cell nil)
         fcell!  #(reset! fcell %)
-        error!  #(.error js/console %)
-        service (fs/service app service)]
+        error!  #(.error js/console %)]
+    (j/cell= (prn "feathers-cell" fcell))
     (j/with-let [_ (j/cell= fcell fcell!)]
       (-> service
         (fs/find (clj->js params))
+        (.then js->clj)
         (.then fcell!)
         (.catch error!))
       (fs/created service (feathers-created fcell))
