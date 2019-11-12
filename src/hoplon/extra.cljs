@@ -1,4 +1,4 @@
-(ns holon.extra
+(ns hoplon.extra
   (:require [hoplon.core :as h]))
 
 (defn- stylesheet [url]
