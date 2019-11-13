@@ -1,9 +1,9 @@
 (ns hoplon.feathers
   (:require [javelin.core :as j]
-            [hoplon.debug :as debug]
+            [hoplon.debug :as dbg]
             [feathers.client.services :as fs]))
 
-(def ^:private debug (debug/debug :hoplon/feathers))
+(def ^:private debug (dbg/debug "hoplon:feathers"))
 
 (defn feathers-created [fcell]
   (fn [data]
