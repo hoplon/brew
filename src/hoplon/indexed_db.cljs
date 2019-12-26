@@ -1,62 +1,72 @@
 (ns hoplon.indexed-db
-  (:require [javelin.core :as j])
+  (:require [javelin.core :as j]
+            [hoplon.indexed-db.factory :as factory]
+            [hoplon.indexed-db.opendbrequest :as req]
+            [hoplon.indexed-db.database :as db]
+            [hoplon.indexed-db.transaction :as tx])
   (:require-macros hoplon.indexed-db))
 
+;; IndexedDB Helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def indexedDB (.-indexedDB js/window))
 
-(defprotocol IDBFactory
-  (open [this name] [this name version] "Open the connection to indexedDB database.")
-  (deleteDatabase [this name] "Delete an indexedDB database.")
-  (databases [this] "List all available databases, including name and version."))
+(def open-database (partial factory/open indexedDB))
 
-(defprotocol IDBOpenDBRequest
-  (onerror [this callback] "Handle errors on the open database request.")
-  (onsuccess [this callback] "Handle success on the open database request.")
-  (onupgradeneeded [this callback] "Handle database upgrade needed on the open database request."))
+(def upgrade-database req/onupgradeneeded)
 
-(defprotocol IDBDatabase
-  (close [this] "Async closes the connection to a database.")
-  (createObjectStore [this name] [this name  opts] "Creates a new object store.")
-  (deleteObjectStore [this name] "Delete an object store.")
-  (transaction [this stores] [this stores mode] "Returns the transaction object.")
-  (objectStoreNames [this] "Returns a DOMStringList of all existing object stores."))
+(defn create-stores [db stores]
+  (let [current (db/objectStoreNames db)]
+    (doseq [store stores]
+      (when-not (.contains current store)
+        (db/createObjectStore db store)))))
 
-(extend-type js/IDBFactory
-  IDBFactory
-  (open
-    ([this name]
-     (.open this name))
-    ([this name version]
-     (.open this name version)))
-  (deleteDatabase [this name]
-    (.deleteDatabase this name))
-  (databases [this]
-    (.deleteDatabase this)))
+(defn delete-stores [db stores]
+  (let [current (db/objectStoreNames db)]
+    (doseq [store current]
+      (when-not (contains? (set stores) store)
+        (db/deleteObjectStore db store)))))
 
-(extend-type js/IDBOpenDBRequest
-  IDBOpenDBRequest
-  (onerror [this callback]
-    (.addEventListener this "error" callback))
-  (onsuccess [this callback]
-    (.addEventListener this "success" callback))
-  (onupgradeneeded [this callback]
-    (.addEventListener this "upgradeneeded" callback)))
+(defn get-result [event]
+  (.-result (.-target event)))
 
-(extend-type js/IDBDatabase
-  IDBDatabase
-  (close [this]
-    (.close this))
-  (createObjectStore
-    ([this name]
-     (.createObjectStore this name))
-    ([this name opts]
-     (.createObjectStore this name opts)))
-  (deleteObjectStore [this name]
-    (.deleteObjectStore this name))
-  (transaction
-    ([this stores]
-     (.transaction this stores))
-    ([this stores mode]
-     (.transaction this stores mode)))
-  (objectStoreNames [this]
-    (.-objectStoreNames this)))
+(defn get-version [event]
+  [(.-oldVersion event) (.-newVersion event)])
+
+(defn when-success [tx callback]
+  (.addEventListener tx "success" callback))
+
+(defn when-error [tx callback]
+  (.addEventListener tx "error" callback))
+
+(defn when-upgrading [tx callback]
+  (.addEventListener tx "upgradeneeded" callback))
+
+(defn object-store= [req store key]
+  (let [idb (j/cell nil)
+        ostore (j/cell nil)
+        ostore! (partial reset! ostore)]
+    (when-success req
+      (fn [event]
+        (reset! idb (get-result event))
+        (let [store (-> @idb (db/transaction store) (tx/objectStore store))]
+          (when-success (.get store key)
+            (fn [event]
+              (ostore! (js->clj (get-result event) :keywordize-keys true)))))))
+    (j/cell= ostore
+      (fn [val]
+        (let [store (-> @idb (db/transaction store "readwrite") (tx/objectStore store))]
+          (when-success (.put store val key)
+            (fn [event]
+              (ostore! (js->clj val :keywordize-keys true)))))))))
+
+(defn upgrade-database! [db config]
+  (when-upgrading db
+    (fn [event]
+      (let [[old new] (get-version event)
+            db (get-result event)]
+        (loop [old old new new]
+          (when-not (> old new)
+            (when-let [stores (get config old)]
+              (create-stores db stores)
+              (delete-stores db stores))
+            (recur (inc old) new)))))))
