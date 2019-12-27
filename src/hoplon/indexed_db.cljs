@@ -51,13 +51,15 @@
         (let [store (-> @idb (db/transaction store) (tx/objectStore store))]
           (when-success (.get store key)
             (fn [event]
-              (ostore! (js->clj (get-result event) :keywordize-keys true)))))))
+              (let [result (get-result event)]
+                (prn result)
+                (ostore! (js->clj result :keywordize-keys true))))))))
     (j/cell= ostore
       (fn [val]
         (let [store (-> @idb (db/transaction store "readwrite") (tx/objectStore store))]
-          (when-success (.put store val key)
+          (when-success (.put store (clj->js val) key)
             (fn [event]
-              (ostore! (js->clj val :keywordize-keys true)))))))))
+              (ostore! val))))))))
 
 (defn upgrade-database! [db config]
   (when-upgrading db
