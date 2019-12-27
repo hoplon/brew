@@ -52,7 +52,6 @@
           (when-success (.get store key)
             (fn [event]
               (let [result (get-result event)]
-                (prn result)
                 (ostore! (js->clj result :keywordize-keys true))))))))
     (j/cell= ostore
       (fn [val]
